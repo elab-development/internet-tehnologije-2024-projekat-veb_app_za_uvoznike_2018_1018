@@ -15,6 +15,12 @@ class SupplierImporter extends Model
     ];
 
     public $timestamps = false;
-
-    
+    public function supplier()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+    public function importer()
+    {
+        return $this->belongsTo(User::class, 'importer_id');
+    }
 }

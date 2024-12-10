@@ -59,4 +59,14 @@ class User extends Authenticatable
     {
         return $this->role === 'importer';
     }
+    public function suppliers()
+    {
+        return $this->belongsToMany(User::class, 'supplier_importers', 'importer_id', 'supplier_id');
+    }
+
+    public function importers()
+    {
+        return $this->belongsToMany(User::class, 'supplier_importers', 'supplier_id', 'importer_id');
+    }
+
 }
