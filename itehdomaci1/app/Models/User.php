@@ -2,31 +2,32 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable; // Važno: Nasleđuje se od Authenticatable
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens; // ili Passport/Airlock/Jetstream, po potrebi
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Polja koja se mogu masovno dodeljivati.
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',       // 'admin', 'supplier', 'importer'
+        'company_name', 
+        'contact_person',
+        'phone',
+        'address',
+        'country'
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Polja koja će biti skrivena u JSON odgovorima.
      */
     protected $hidden = [
         'password',
@@ -34,11 +35,28 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Mutator za password - da se automatski hešuje.
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function setPasswordAttribute($password)
+    {
+        $this->attributes['password'] = bcrypt($password);
+    }
+
+    /**
+     * Pomoćne metode za role:
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isSupplier()
+    {
+        return $this->role === 'supplier';
+    }
+
+    public function isImporter()
+    {
+        return $this->role === 'importer';
+    }
 }
