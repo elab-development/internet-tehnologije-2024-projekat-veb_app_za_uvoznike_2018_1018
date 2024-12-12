@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
+            $table->text('description')->nullable();
+            $table->date('valid')->nullable();  
+            $table->text('notes')->nullable();  
+            $table->unsignedBigInteger('supplier_id');
+            $table->foreign('supplier_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
