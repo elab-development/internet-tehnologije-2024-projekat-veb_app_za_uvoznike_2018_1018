@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\OfferController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,3 +40,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
  
 
+Route::middleware('auth:sanctum')->apiResource('offers', OfferController::class);
