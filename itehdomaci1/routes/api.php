@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\OfferController;
-
+use App\Http\Controllers\SupplierImporterController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,6 +18,8 @@ use App\Http\Controllers\OfferController;
 |
 */
 
+
+ 
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/containers', [ContainerController::class, 'index']);
@@ -32,6 +34,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{id}', [ProductController::class, 'update']);
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+
+    Route::get('/supplier-importers', [SupplierImporterController::class, 'index']);
+    Route::post('/supplier-importers', [SupplierImporterController::class, 'store']);
+    Route::delete('/supplier-importers/{id}', [SupplierImporterController::class, 'destroy']);
+
+    Route::get('/supplier/{supplierId}/importers', [SupplierImporterController::class, 'getImportersBySupplier']);
+    Route::get('/importer/{importerId}/suppliers', [SupplierImporterController::class, 'getSuppliersByImporter']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
