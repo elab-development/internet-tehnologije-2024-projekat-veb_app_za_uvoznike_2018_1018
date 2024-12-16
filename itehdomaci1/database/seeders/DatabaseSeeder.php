@@ -72,7 +72,7 @@ class DatabaseSeeder extends Seeder
                 'features' => $faker->sentence,
                 'price' => $faker->randomFloat(2, 10, 1000),
                 'category' => $faker->word,
-                'supplier_id' => rand(2, 6), // Assuming Supplier IDs start from 2
+                'supplier_id' => rand(2, 6), //   Supplier IDs start from 2
             ]);
         }
 
@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
             DB::table('offers')->insert([
                 'description' => $faker->paragraph,
                 'valid_until' => $faker->dateTimeBetween('+1 week', '+1 month'),
-                'supplier_id' => rand(2, 6), // Assuming Supplier IDs start from 2
+                'supplier_id' => rand(2, 6), //   Supplier IDs start from 2
             ]);
         }
 
@@ -92,7 +92,7 @@ class DatabaseSeeder extends Seeder
                 'max_capacity' => $faker->numberBetween(100, 1000),
                 'max_dimensions' => $faker->randomNumber(2) . 'x' . $faker->randomNumber(2) . 'x' . $faker->randomNumber(2) . ' cm',
                 'total_import_cost' => $faker->randomFloat(2, 1000, 10000),
-                'importer_id' => rand(7, 11), // Assuming Importer IDs start from 7
+                'importer_id' => rand(7, 11), //   Importer IDs start from 7
                 'status' => $faker->randomElement(['pending', 'shipped', 'delivered']),
             ]);
         }
@@ -100,8 +100,8 @@ class DatabaseSeeder extends Seeder
         // Create Supplier-Importer Relationships
         for ($i = 0; $i < 10; $i++) {
             DB::table('supplier_importers')->insert([
-                'supplier_id' => rand(2, 6), // Assuming Supplier IDs start from 2
-                'importer_id' => rand(7, 11), // Assuming Importer IDs start from 7
+                'supplier_id' => rand(2, 6), //   Supplier IDs start from 2
+                'importer_id' => rand(7, 11), //   Importer IDs start from 7
             ]);
         }
     }
