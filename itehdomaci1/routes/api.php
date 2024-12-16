@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ContainerController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -15,11 +16,15 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/containers', [ContainerController::class, 'index']);
+    Route::get('/containers/{id}', [ContainerController::class, 'show']);
+    Route::post('/containers', [ContainerController::class, 'store']);
+    Route::put('/containers/{id}', [ContainerController::class, 'update']);
+    Route::delete('/containers/{id}', [ContainerController::class, 'destroy']);
+
+
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
     Route::post('/products', [ProductController::class, 'store']);
@@ -27,5 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 });
 
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+ 
 
