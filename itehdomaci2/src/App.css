@@ -1,38 +1,63 @@
-.App {
-  text-align: center;
+.navbar{
+  position: sticky; top:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--border);
 }
+.nav-left, .nav-right{display:flex; align-items:center; gap:12px}
+.brand{font-weight:700; color:var(--text)}
+.nav-link{color:var(--muted); padding:6px 8px; border-radius:8px}
+.nav-link:hover{background:#151936; color:var(--text)}
+.nav-user{color:var(--muted)}
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+/* src/index.css — minimalistički stil */
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+:root{
+  --bg:#0f1221; --panel:#171a2e; --muted:#9aa3b2; --text:#e7eaf3; --primary:#6ea8fe;
+  --danger:#ff6b6b; --border:#252a41; --shadow:0 10px 30px rgba(0,0,0,.35);
 }
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;background:linear-gradient(180deg,#0f1221,#12162a);color:var(--text);font:16px/1.5 Inter,system-ui,Segoe UI,Roboto,Arial}
+a{color:var(--primary);text-decoration:none}
+.muted{color:var(--muted)}
+.page{max-width:1050px;margin:40px auto;padding:0 16px}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.topbar h1{margin:0;font-size:22px}
 
-.App-link {
-  color: #61dafb;
-}
+.auth-card{max-width:420px;margin:12vh auto;padding:24px;border:1px solid var(--border);background:var(--panel);border-radius:16px;box-shadow:var(--shadow)}
+.auth-card h1{margin-top:0}
+.error-block{background:#2b1d1d;border:1px solid #4a2222;color:#ffb3b3;padding:8px 10px;border-radius:12px}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+.input{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.input span{font-size:14px;color:var(--muted)}
+.input input,.input select{background:#111429;border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;outline:none}
+.input input:focus,.input select:focus{border-color:#2b335a}
+
+.btn{border:1px solid transparent;background:var(--primary);color:#0b1020;padding:10px 14px;border-radius:12px;cursor:pointer}
+.btn[disabled]{opacity:.6;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--border)}
+.btn.danger{background:var(--danger);color:#201010}
+
+.table-wrap{border:1px solid var(--border);background:var(--panel);border-radius:14px;overflow:auto}
+.tbl{border-collapse:collapse;width:100%}
+.tbl th,.tbl td{padding:12px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+.tbl th{color:#b9c2d3;font-weight:600;background:#141730;position:sticky;top:0}
+.tbl .empty{text-align:center;color:var(--muted);padding:28px}
+
+.row-actions{display:flex;gap:8px}
+
+.searchbar{display:flex;gap:10px;align-items:center;margin:14px 0}
+.searchbar input,.searchbar select{background:#111429;border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;outline:none}
+.searchbar input{flex:1}
+
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:grid;place-items:center;padding:20px}
+.modal{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+.icon-btn{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer}
+.modal-body{padding:16px}
+
+.form-grid{display:grid;gap:12px}
+.form-actions{display:flex;justify-content:flex-end;gap:8px}
+
+.guard{max-width:520px;margin:15vh auto;padding:24px;border:1px solid var(--border);background:var(--panel);border-radius:16px;text-align:center}

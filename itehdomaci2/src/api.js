@@ -46,7 +46,7 @@ export const loginApi = (email, password) =>
   apiPost("/auth/login", { email, password });
 
 export const logoutApi = () => apiPost("/auth/logout", {});
-
+export const registerApi = (payload) => apiPost("/auth/register", payload);
 // CONTAINERS (CRUD)
 export const listContainers = () => apiGet("/containers");
 export const createContainer = (payload) => apiPost("/containers", payload);
