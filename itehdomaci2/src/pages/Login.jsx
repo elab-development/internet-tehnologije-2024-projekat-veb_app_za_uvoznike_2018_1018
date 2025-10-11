@@ -1,10 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 
 export default function Login() {
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || "/containers";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState(null);
@@ -16,7 +21,7 @@ export default function Login() {
     setBusy(true);
     try {
       await login({ email, password });
-      window.location.href = "/containers";
+      navigate(redirectTo, { replace: true });
     } catch (e) {
       setErr(e?.errors || e?.message || "Greška pri prijavi");
     } finally {
@@ -33,7 +38,6 @@ export default function Login() {
         {err && <p className="error-block">{typeof err === "string" ? err : JSON.stringify(err)}</p>}
         <Button disabled={busy} type="submit">{busy ? "Prijavljivanje..." : "Prijavi se"}</Button>
       </form>
-      <p className="muted">Ovaj UI koristi samo login (registracija se radi u backendu sa `role=importer`).</p>
     </div>
   );
 }
