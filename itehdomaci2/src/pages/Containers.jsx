@@ -44,12 +44,19 @@ export default function ContainersPage() {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return rows.filter(r => {
-      const hitQ = !q || [r.name, r.max_dimensions].some(v => String(v||"").toLowerCase().includes(q));
+    return rows.filter((r) => {
+      const hitQ =
+        !q ||
+        [r.name, r.max_dimensions].some((v) =>
+          String(v || "").toLowerCase().includes(q)
+        );
       const hitS = !status || r.status === status;
       return hitQ && hitS;
     });
@@ -62,13 +69,18 @@ export default function ContainersPage() {
     { key: "total_import_cost", header: "Trošak (EUR)" },
     { key: "status", header: "Status" },
     {
-      key: "actions", header: "",
+      key: "actions",
+      header: "",
       render: (r) => (
         <div className="row-actions">
-          <Button variant="ghost" onClick={() => onEdit(r)}>Izmeni</Button>
-          <Button variant="danger" onClick={() => onDelete(r.id)}>Obriši</Button>
+          <Button variant="ghost" onClick={() => onEdit(r)}>
+            Izmeni
+          </Button>
+          <Button variant="danger" onClick={() => onDelete(r.id)}>
+            Obriši
+          </Button>
         </div>
-      )
+      ),
     },
   ];
 
@@ -85,12 +97,16 @@ export default function ContainersPage() {
   };
 
   const onDelete = async (id) => {
-    if (!confirm("Obrisati kontejner?")) return;
+    if (!window.confirm("Obrisati kontejner?")) return;
     try {
       await deleteContainer(id);
-      setRows(prev => prev.filter(x => x.id !== id));
+      setRows((prev) => prev.filter((x) => x.id !== id));
     } catch (e) {
-      alert(JSON.stringify(e?.errors || e?.message || "Greška pri brisanju"));
+      window.alert(
+        typeof e === "string"
+          ? e
+          : JSON.stringify(e?.errors || e?.message || "Greška pri brisanju")
+      );
     }
   };
 
@@ -106,19 +122,26 @@ export default function ContainersPage() {
     try {
       const payload = {
         ...form,
-        max_capacity: Number(form.max_capacity),
-        total_import_cost: Number(form.total_import_cost),
+        max_capacity:
+          form.max_capacity === "" ? null : parseFloat(form.max_capacity),
+        total_import_cost:
+          form.total_import_cost === "" ? null : parseFloat(form.total_import_cost),
       };
+
       if (editId) {
         const { data } = await updateContainer(editId, payload);
-        setRows(prev => prev.map(x => (x.id === editId ? data : x)));
+        setRows((prev) => prev.map((x) => (x.id === editId ? data : x)));
       } else {
         const { data } = await createContainer(payload);
-        setRows(prev => [data, ...prev]);
+        setRows((prev) => [data, ...prev]);
       }
       setOpen(false);
     } catch (e) {
-      alert(JSON.stringify(e?.errors || e?.message || "Greška pri čuvanju"));
+      window.alert(
+        typeof e === "string"
+          ? e
+          : JSON.stringify(e?.errors || e?.message || "Greška pri čuvanju")
+      );
     } finally {
       setSaving(false);
     }
@@ -130,38 +153,95 @@ export default function ContainersPage() {
         <h1>Containers</h1>
         <div className="topbar-right">
           <span className="muted">Prijavljen: {user?.name || user?.email}</span>
-          <Button variant="ghost" onClick={logout}>Odjava</Button>
+          <Button variant="ghost" onClick={logout}>
+            Odjava
+          </Button>
         </div>
       </header>
 
       <SearchBar
-        query={query} onQuery={setQuery}
-        status={status} onStatus={setStatus}
-        onReset={() => { setQuery(""); setStatus(""); }}
+        query={query}
+        onQuery={setQuery}
+        status={status}
+        onStatus={setStatus}
+        onReset={() => {
+          setQuery("");
+          setStatus("");
+        }}
         extra={<Button onClick={onNew}>+ Novi kontejner</Button>}
       />
 
-      {loading ? <p>Učitavanje...</p> : err ? <p className="error-block">{String(err)}</p> : (
+      {loading ? (
+        <p>Učitavanje...</p>
+      ) : err ? (
+        <p className="error-block">{String(err)}</p>
+      ) : (
         <DataTable columns={columns} rows={filtered} />
       )}
 
-      <Modal open={open} title={editId ? "Izmena kontejnera" : "Novi kontejner"} onClose={()=>setOpen(false)}>
+      <Modal
+        open={open}
+        title={editId ? "Izmena kontejnera" : "Novi kontejner"}
+        onClose={() => setOpen(false)}
+      >
         <form className="form-grid" onSubmit={submit}>
-          <Input label="Naziv" value={form.name} onChange={(e)=>setForm(f=>({...f, name: e.target.value}))} required />
-          <Input label="Max kapacitet" type="number" value={form.max_capacity} onChange={(e)=>setForm(f=>({...f, max_capacity: e.target.value}))} required />
-          <Input label="Dimenzije" value={form.max_dimensions} onChange={(e)=>setForm(f=>({...f, max_dimensions: e.target.value}))} required />
-          <Input label="Ukupan trošak (EUR)" type="number" value={form.total_import_cost} onChange={(e)=>setForm(f=>({...f, total_import_cost: e.target.value}))} required />
+          <Input
+            label="Naziv"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            required
+          />
+          <Input
+            label="Max kapacitet"
+            type="number"
+            value={form.max_capacity}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, max_capacity: e.target.value }))
+            }
+            required
+          />
+          <Input
+            label="Dimenzije"
+            value={form.max_dimensions}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, max_dimensions: e.target.value }))
+            }
+            required
+          />
+          <Input
+            label="Ukupan trošak (EUR)"
+            type="number"
+            value={form.total_import_cost}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, total_import_cost: e.target.value }))
+            }
+            required
+          />
           <label className="input">
             <span>Status</span>
-            <select value={form.status} onChange={(e)=>setForm(f=>({...f, status: e.target.value}))} required>
+            <select
+              value={form.status}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, status: e.target.value }))
+              }
+              required
+            >
               <option value="pending">pending</option>
               <option value="shipped">shipped</option>
               <option value="delivered">delivered</option>
             </select>
           </label>
           <div className="form-actions">
-            <Button type="button" variant="ghost" onClick={()=>setOpen(false)}>Otkaži</Button>
-            <Button type="submit" disabled={saving}>{saving ? "Čuvam..." : "Sačuvaj"}</Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setOpen(false)}
+            >
+              Otkaži
+            </Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? "Čuvam..." : "Sačuvaj"}
+            </Button>
           </div>
         </form>
       </Modal>

@@ -9,10 +9,30 @@ use Illuminate\Support\Facades\Validator;
 
 class ContainerController extends Controller
 {
-    public function index()
+    //metoda prepravljena za react domaci tako da vraca samo kontejnere od ulogovanog korisnika (importera)
+    public function index(Request $request)
     {
-        $containers = Container::all();
-        return response()->json($containers, 200);
+        $user = $request->user();
+
+        $q = Container::query();
+
+        // importer vidi samo svoje kontejnere
+        if ($user->role === 'importer') {
+            $q->where('importer_id', $user->id);
+        }
+
+   
+        if ($status = $request->query('status')) {
+            $q->where('status', $status);
+        }
+        if ($s = $request->query('q')) {
+            $q->where(function ($w) use ($s) {
+                $w->where('name', 'like', "%$s%")
+                  ->orWhere('max_dimensions', 'like', "%$s%");
+            });
+        }
+
+        return response()->json($q->latest()->get(), 200);
     }
 
     public function show($id)

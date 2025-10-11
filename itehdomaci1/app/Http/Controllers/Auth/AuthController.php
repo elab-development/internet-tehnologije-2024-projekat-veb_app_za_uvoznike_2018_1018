@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+ public function register(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -23,6 +24,8 @@ class AuthController extends Controller
             'address' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:100',
         ]);
+
+          
 
         $user = User::create($validated);
 

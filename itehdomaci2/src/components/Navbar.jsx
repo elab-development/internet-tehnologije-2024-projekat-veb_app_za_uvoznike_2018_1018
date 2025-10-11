@@ -1,6 +1,5 @@
-
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import Button from "./ui/Button";
 import { useAuth } from "../auth/AuthContext";
 
@@ -10,10 +9,9 @@ export default function Navbar() {
 
   const onLogout = async () => {
     try {
-      await logout();              // poziva backend /auth/logout iz AuthContext-a
+      await logout();
       navigate("/", { replace: true });
     } catch (e) {
-      // opciono: pokaži poruku
       console.error(e);
     }
   };
@@ -22,10 +20,22 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="nav-left">
         <Link className="brand" to={isAuth ? "/containers" : "/"}>Importer App</Link>
+
         {isAuth && (
           <>
-            <Link className="nav-link" to="/containers">Containers</Link>
-            {/* po potrebi dodaj još linkova: Products, Offers... */}
+            <NavLink
+              to="/containers"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            >
+              Containers
+            </NavLink>
+            <NavLink
+              to="/products"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            >
+              Products
+            </NavLink>
+          
           </>
         )}
       </div>
@@ -37,7 +47,10 @@ export default function Navbar() {
             <Button variant="ghost" onClick={onLogout}>Logout</Button>
           </>
         ) : (
-          <Link className="btn" to="/">Login</Link>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Link className="btn" to="/">Login</Link>
+            <Link className="btn ghost" to="/register">Register</Link>
+          </div>
         )}
       </div>
     </nav>

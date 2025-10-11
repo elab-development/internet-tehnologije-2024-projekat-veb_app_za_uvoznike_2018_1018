@@ -8,15 +8,37 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    public function index()
+    //prepravljena metoda index za react domaci tako da importer vidi samo proizvode od supplier-a povezanih kroz supplier_importers
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $q =  Product::query()
+        ->with(['supplier:id,name,email,company_name,contact_person,phone,address,country']);
+ 
+        if ($s = $request->query('q')) {
+            $q->where(function ($w) use ($s) {
+                $w->where('name', 'like', "%$s%")
+                ->orWhere('code', 'like', "%$s%")
+                ->orWhere('dimensions', 'like', "%$s%");
+            });
+        }
+        if ($cat = $request->query('category')) {
+            $q->where('category', $cat);
+        }
+        if ($min = $request->query('price_min')) {
+            $q->where('price', '>=', (float) $min);
+        }
+        if ($max = $request->query('price_max')) {
+            $q->where('price', '<=', (float) $max);
+        } 
+    
+        $products = $q->latest()->get();
 
         return response()->json([
             'message' => 'Products retrieved successfully.',
             'data' => $products,
         ]);
     }
+
 
     public function show($id)
     {

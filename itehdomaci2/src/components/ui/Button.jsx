@@ -1,9 +1,17 @@
+ 
 import React from "react";
 
-export default function Button({ children, variant = "primary", ...props }) {
+export default function Button({
+  type = "button",                 
+  variant,
+  className = "",
+  ...props
+}) {
   return (
-    <button className={`btn ${variant}`} {...props}>
-      {children}
-    </button>
+    <button
+      type={type}
+      className={`btn ${variant ? variant : ""} ${className}`}
+      {...props}
+    />
   );
 }

@@ -1,12 +1,13 @@
-
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AuthProvider from "./auth/AuthContext";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
-import ContainersPage from "./pages/Containers";
 import Register from "./pages/Register";
+import ContainersPage from "./pages/Containers";
+import ProductsPage from "./pages/Products";  
+import "./App.css";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
         <Route
           path="/containers"
           element={
@@ -22,8 +24,17 @@ export default function App() {
               <ContainersPage />
             </ProtectedRoute>
           }
+        /> 
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute>
+              <ProductsPage />
+            </ProtectedRoute>
+          }
         />
-        <Route path="*" element={<div style={{padding:16}}>404 – Page not found</div>} />
+
+        <Route path="*" element={<div style={{ padding: 16 }}>404 – Page not found</div>} />
       </Routes>
     </AuthProvider>
   );
