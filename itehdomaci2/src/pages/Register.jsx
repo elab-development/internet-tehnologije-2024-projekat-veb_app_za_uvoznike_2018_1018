@@ -1,19 +1,19 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { registerApi } from "../api";
 
 const initial = {
-  name: "",
-  email: "",
-  password: "",
+  name: "Test User",
+  email: "test" + Date.now() + "@mail.com",
+  password: "password123",
   role: "importer",
-  company_name: "",
-  contact_person: "",
-  phone: "",
-  address: "",
-  country: "",
+  company_name: "Test Company",
+  contact_person: "Test Contact",
+  phone: "+381600000000",
+  address: "Test Address 1",
+  country: "Serbia",
 };
 
 export default function Register() {
@@ -23,11 +23,25 @@ export default function Register() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const [step, setStep] = useState(1);
+  const [countries, setCountries] = useState([]);
   const totalSteps = 2;
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  // Validacija za 1. korak
+  useEffect(() => {
+    fetch("https://restcountries.com/v3.1/all?fields=name")
+      .then((res) => res.json())
+      .then((data) => {
+        const list = data
+          .map((c) => c?.name?.common)
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b));
+
+        setCountries(list);
+      })
+      .catch(() => setCountries([]));
+  }, []);
+
   const validStep1 = useMemo(() => {
     const emailOk = /\S+@\S+\.\S+/.test(form.email);
     return form.name.trim().length > 0 && emailOk && form.password.length >= 8;
@@ -51,20 +65,24 @@ export default function Register() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (step === 1) return goNext();
 
-    // step === 2
+    if (step === 1) {
+      return goNext();
+    }
+
     setErr(null);
     setBusy(true);
+
     try {
-      // pripremi payload (trim osnovnih polja)
       const payload = {
         ...form,
         name: form.name.trim(),
         email: form.email.trim(),
         role: "importer",
       };
+
       await registerApi(payload);
+
       navigate("/", {
         replace: true,
         state: { justRegistered: true, emailPrefill: form.email },
@@ -78,17 +96,23 @@ export default function Register() {
 
   return (
     <div className="auth-card">
-      {/* Stepper */}
       <div className="stepper-head">
         <h1>Registracija (Importer)</h1>
+
         <div className="stepper">
           <div className="stepper-track" aria-hidden="true">
             <div className="stepper-fill" style={{ width: `${progressPct}%` }} />
           </div>
+
           <div className="stepper-dots" role="list" aria-label="Koraci registracije">
-            <span role="listitem" className={`dot ${step >= 1 ? "active" : ""}`}>1</span>
-            <span role="listitem" className={`dot ${step >= 2 ? "active" : ""}`}>2</span>
+            <span role="listitem" className={`dot ${step >= 1 ? "active" : ""}`}>
+              1
+            </span>
+            <span role="listitem" className={`dot ${step >= 2 ? "active" : ""}`}>
+              2
+            </span>
           </div>
+
           <div className="stepper-label">
             {step === 1 ? "Korak 1/2 — Osnovni podaci" : "Korak 2/2 — Podaci o kompaniji"}
           </div>
@@ -98,7 +122,6 @@ export default function Register() {
       <form
         onSubmit={onSubmit}
         onKeyDown={(e) => {
-          // u 1. koraku ENTER ne sme da submituje formu
           if (step === 1 && e.key === "Enter") e.preventDefault();
         }}
       >
@@ -110,6 +133,7 @@ export default function Register() {
               onChange={set("name")}
               required
             />
+
             <Input
               label="Email"
               type="email"
@@ -117,6 +141,7 @@ export default function Register() {
               onChange={set("email")}
               required
             />
+
             <Input
               label="Lozinka (min 8)"
               type="password"
@@ -124,6 +149,7 @@ export default function Register() {
               onChange={set("password")}
               required
             />
+
             <label className="input">
               <span>Uloga</span>
               <input value="importer" readOnly />
@@ -138,26 +164,36 @@ export default function Register() {
               value={form.company_name}
               onChange={set("company_name")}
             />
+
             <Input
               label="Kontakt osoba"
               value={form.contact_person}
               onChange={set("contact_person")}
             />
+
             <Input
               label="Telefon"
               value={form.phone}
               onChange={set("phone")}
             />
+
             <Input
               label="Adresa"
               value={form.address}
               onChange={set("address")}
             />
-            <Input
-              label="Država"
-              value={form.country}
-              onChange={set("country")}
-            />
+
+            <label className="input">
+              <span>Država</span>
+              <select value={form.country} onChange={set("country")}>
+                <option value="">Izaberi državu</option>
+                {countries.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </label>
           </>
         )}
 
@@ -173,11 +209,12 @@ export default function Register() {
               Nazad
             </Button>
           )}
+
           {step < totalSteps ? (
             <Button
               type="button"
               onClick={(e) => {
-                e.preventDefault(); // defanzivno
+                e.preventDefault();
                 goNext();
               }}
               disabled={!validStep1}

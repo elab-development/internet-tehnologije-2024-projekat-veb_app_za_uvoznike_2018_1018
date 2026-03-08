@@ -127,3 +127,5 @@ export const deleteUser = (id) => apiDelete(`/admin/users/${id}`);
 
 export const getImportersBySupplier = (supplierId) =>
   apiGet(`/supplier/${supplierId}/importers`);
+export const getSuppliersByImporter = (importerId) =>
+  apiGet(`/importer/${importerId}/suppliers`);

@@ -19,6 +19,7 @@ export default function ImporterDashboard() {
       </header>
 
       <div className="dashboard-grid">
+
         <div className="dashboard-card">
           <h2>Proizvodi dobavljača</h2>
           <p>
@@ -39,7 +40,16 @@ export default function ImporterDashboard() {
             Idi na kontejnere
           </Link>
         </div>
- 
+
+        <div className="dashboard-card">
+          <h2>Moji dobavljači</h2>
+          <p>
+            Pregledaj dobavljače sa kojima tvoja firma sarađuje.
+          </p>
+          <Link to="/importer/suppliers" className="dashboard-link">
+            Prikaži dobavljače
+          </Link>
+        </div>
 
         <div className="dashboard-card">
           <h2>Moj nalog</h2>
@@ -53,6 +63,7 @@ export default function ImporterDashboard() {
             Kontakt: <b>{user?.email || "Nije uneto"}</b>
           </p>
         </div>
+
       </div>
     </div>
   );

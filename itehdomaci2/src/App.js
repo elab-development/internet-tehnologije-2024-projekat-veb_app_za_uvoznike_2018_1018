@@ -14,6 +14,7 @@ import ImporterDashboard from "./pages/ImporterDashboard";
 import SupplierDashboard from "./pages/SupplierDashboard";
 import SupplierProductsPage from "./pages/SupplierProductsPage";
 import SupplierImportersPage from "./pages/SupplierImportersPage";
+import ImporterSuppliersPage from "./pages/ImporterSuppliersPage";
 
 export default function App() {
   return (
@@ -87,6 +88,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <SupplierImportersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/importer/suppliers"
+        element={
+          <ProtectedRoute>
+            <ImporterSuppliersPage />
           </ProtectedRoute>
         }
       />
