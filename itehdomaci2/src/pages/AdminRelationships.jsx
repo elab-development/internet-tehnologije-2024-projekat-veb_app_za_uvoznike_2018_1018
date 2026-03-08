@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import * as XLSX from "xlsx";
 import {
   listSupplierImporters,
   createSupplierImporter,
@@ -25,27 +26,27 @@ export default function AdminRelationships() {
 
   const fetchedRef = useRef(false);
 
-const fetchData = async () => {
-  setLoading(true);
-  setErr(null);
+  const fetchData = async () => {
+    setLoading(true);
+    setErr(null);
 
-  try {
-    const relRes = await listSupplierImporters();
-    setRows(Array.isArray(relRes?.data) ? relRes.data : []);
-  } catch (e) {
-    console.log("supplier-importers error", e);
-  }
+    try {
+      const relRes = await listSupplierImporters();
+      setRows(Array.isArray(relRes?.data) ? relRes.data : []);
+    } catch (e) {
+      console.log("supplier-importers error", e);
+    }
 
-  try {
-    const usersRes = await listUsers();
-    setUsers(Array.isArray(usersRes?.data) ? usersRes.data : []);
-  } catch (e) {
-    console.log("users error", e);
-    setErr(e?.message || "Greška pri učitavanju podataka");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const usersRes = await listUsers();
+      setUsers(Array.isArray(usersRes?.data) ? usersRes.data : []);
+    } catch (e) {
+      console.log("users error", e);
+      setErr(e?.message || "Greška pri učitavanju podataka");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (fetchedRef.current) return;
@@ -62,6 +63,25 @@ const fetchData = async () => {
     () => users.filter((u) => u.role === "importer"),
     [users]
   );
+
+  const exportToExcel = () => {
+    const exportData = rows.map((r) => ({
+      "Supplier ID": r.supplier?.id || "",
+      Supplier: r.supplier?.name || "",
+      "Supplier Email": r.supplier?.email || "",
+      "Supplier Company": r.supplier?.company_name || "",
+      "Importer ID": r.importer?.id || "",
+      Importer: r.importer?.name || "",
+      "Importer Email": r.importer?.email || "",
+      "Importer Company": r.importer?.company_name || "",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Relationships");
+    XLSX.writeFile(workbook, "supplier_importer_relationships.xlsx");
+  };
 
   const columns = [
     {
@@ -106,7 +126,9 @@ const fetchData = async () => {
     } catch (e) {
       window.alert(
         e?.response?.data?.message ||
-        JSON.stringify(e?.response?.data?.errors || e?.message || "Greška pri brisanju")
+          JSON.stringify(
+            e?.response?.data?.errors || e?.message || "Greška pri brisanju"
+          )
       );
     }
   };
@@ -116,34 +138,37 @@ const fetchData = async () => {
     setOpen(true);
   };
 
-const submit = async (e) => {
-  e.preventDefault();
-  setSaving(true);
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
 
-  try {
-    const payload = {
-      supplier_id: Number(form.supplier_id),
-      importer_id: Number(form.importer_id),
-    };
+    try {
+      const payload = {
+        supplier_id: Number(form.supplier_id),
+        importer_id: Number(form.importer_id),
+      };
 
-    const res = await createSupplierImporter(payload);
-    setRows((prev) => [res.data, ...prev]);
-    setOpen(false);
-    setForm(emptyForm);
-  } catch (e) {
-    window.alert(
-      e?.message || "Greška pri čuvanju"
-    );
-  } finally {
-    setSaving(false);
-  }
-};
+      const res = await createSupplierImporter(payload);
+      setRows((prev) => [res.data, ...prev]);
+      setOpen(false);
+      setForm(emptyForm);
+    } catch (e) {
+      window.alert(e?.message || "Greška pri čuvanju");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="page">
       <header className="topbar">
         <h1>Povezivanje supplier i importer firmi</h1>
-        <Button onClick={onNew}>+ Nova veza</Button>
+        <div className="topbar-right">
+          <Button variant="ghost" onClick={exportToExcel}>
+            Export Excel
+          </Button>
+          <Button onClick={onNew}>+ Nova veza</Button>
+        </div>
       </header>
 
       {loading ? (
@@ -151,7 +176,11 @@ const submit = async (e) => {
       ) : err ? (
         <p className="error-block">{String(err)}</p>
       ) : (
-        <DataTable columns={columns} rows={rows} emptyText="Nema definisanih veza" />
+        <DataTable
+          columns={columns}
+          rows={rows}
+          emptyText="Nema definisanih veza"
+        />
       )}
 
       <Modal
