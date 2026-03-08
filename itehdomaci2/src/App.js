@@ -9,6 +9,7 @@ import ContainersPage from "./pages/Containers";
 import ProductsPage from "./pages/Products";  
 import "./App.css";
 import AdminUsers from "./pages/AdminUsers";
+import AdminRelationships from "./pages/AdminRelationships";
 
 export default function App() {
   return (
@@ -40,6 +41,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/relationships"
+        element={
+          <ProtectedRoute>
+            <AdminRelationships />
           </ProtectedRoute>
         }
       />

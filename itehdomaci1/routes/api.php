@@ -18,18 +18,6 @@ use App\Http\Controllers\Admin\AdminUserController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-
-
-Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/admin/users', [AdminUserController::class, 'index']);
-    Route::post('/admin/users', [AdminUserController::class, 'store']);
-    Route::get('/admin/users/{id}', [AdminUserController::class, 'show']);
-    Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
-    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
-
-});
  
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -53,6 +41,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/supplier/{supplierId}/importers', [SupplierImporterController::class, 'getImportersBySupplier']);
     Route::get('/importer/{importerId}/suppliers', [SupplierImporterController::class, 'getSuppliersByImporter']);
+
+    
+    Route::get('/admin/users', [AdminUserController::class, 'index']);
+    Route::post('/admin/users', [AdminUserController::class, 'store']);
+    Route::get('/admin/users/{id}', [AdminUserController::class, 'show']);
+    Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);

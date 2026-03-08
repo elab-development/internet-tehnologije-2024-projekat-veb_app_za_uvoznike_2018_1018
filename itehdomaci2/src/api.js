@@ -1,33 +1,48 @@
-
 const API_BASE = import.meta?.env?.VITE_API_URL || "http://127.0.0.1:8000/api";
 
 // ===== Token handling =====
-let authToken = null;
-export const setAuthToken = (t) => (authToken = t);
-export const getAuthToken = () => authToken;
+export const setAuthToken = (t) => {
+  if (t) {
+    localStorage.setItem("token", t);
+  } else {
+    localStorage.removeItem("token");
+  }
+};
+
+export const getAuthToken = () => {
+  return localStorage.getItem("token");
+};
 
 // ===== Helpers =====
-const baseHeaders = () => ({
-  "Content-Type": "application/json",
-  "Accept": "application/json",                  
-  "X-Requested-With": "XMLHttpRequest",         
-  ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-});
+const baseHeaders = () => {
+  const token = getAuthToken();
+
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
 
 const handleResponse = async (res) => {
-  // pokušaj JSON, ako padne, baci statusText
   const data = await res.json().catch(() => null);
+
   if (!res.ok) {
     const err = data ?? { message: res.statusText, status: res.status };
     throw err;
   }
+
   return data;
 };
 
 export async function apiGet(path) {
-  const res = await fetch(`${API_BASE}${path}`, { headers: baseHeaders() });
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: baseHeaders(),
+  });
   return handleResponse(res);
 }
+
 export async function apiPost(path, body) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
@@ -36,6 +51,7 @@ export async function apiPost(path, body) {
   });
   return handleResponse(res);
 }
+
 export async function apiPut(path, body) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "PUT",
@@ -44,6 +60,7 @@ export async function apiPut(path, body) {
   });
   return handleResponse(res);
 }
+
 export async function apiDelete(path) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "DELETE",
