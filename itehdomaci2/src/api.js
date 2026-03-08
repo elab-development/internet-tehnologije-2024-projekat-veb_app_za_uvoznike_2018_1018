@@ -91,3 +91,11 @@ export const getImportersBySupplier = (supplierId) =>
 
 export const getSuppliersByImporter = (importerId) =>
   apiGet(`/importer/${importerId}/suppliers`);
+
+
+// =================== ADMIN USERS ===================
+export const listUsers = () => apiGet("/admin/users");
+export const getUser = (id) => apiGet(`/admin/users/${id}`);
+export const createUser = (payload) => apiPost("/admin/users", payload);
+export const updateUser = (id, payload) => apiPut(`/admin/users/${id}`, payload);
+export const deleteUser = (id) => apiDelete(`/admin/users/${id}`);

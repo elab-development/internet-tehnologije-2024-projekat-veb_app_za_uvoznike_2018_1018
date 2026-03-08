@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\SupplierImporterController;
+use App\Http\Controllers\Admin\AdminUserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,6 +20,16 @@ use App\Http\Controllers\SupplierImporterController;
 */
 
 
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/admin/users', [AdminUserController::class, 'index']);
+    Route::post('/admin/users', [AdminUserController::class, 'store']);
+    Route::get('/admin/users/{id}', [AdminUserController::class, 'show']);
+    Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
+
+});
  
 
 Route::middleware('auth:sanctum')->group(function () {
