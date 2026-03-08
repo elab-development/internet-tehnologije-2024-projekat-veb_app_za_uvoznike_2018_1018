@@ -10,8 +10,8 @@ export default function Login() {
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || "/containers";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@example.com");
+  const [password, setPassword] = useState("password");
   const [err, setErr] = useState(null);
   const [info, setInfo] = useState(null); // info poruka (npr. posle registracije)
   const [busy, setBusy] = useState(false);
