@@ -10,6 +10,10 @@ import ProductsPage from "./pages/Products";
 import "./App.css";
 import AdminUsers from "./pages/AdminUsers";
 import AdminRelationships from "./pages/AdminRelationships";
+import ImporterDashboard from "./pages/ImporterDashboard";
+import SupplierDashboard from "./pages/SupplierDashboard";
+import SupplierProductsPage from "./pages/SupplierProductsPage";
+import SupplierImportersPage from "./pages/SupplierImportersPage";
 
 export default function App() {
   return (
@@ -49,6 +53,40 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AdminRelationships />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/importer/dashboard"
+        element={
+          <ProtectedRoute>
+            <ImporterDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/supplier/dashboard"
+        element={
+          <ProtectedRoute>
+            <SupplierDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/supplier/products"
+        element={
+          <ProtectedRoute>
+            <SupplierProductsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/supplier/importers"
+        element={
+          <ProtectedRoute>
+            <SupplierImportersPage />
           </ProtectedRoute>
         }
       />

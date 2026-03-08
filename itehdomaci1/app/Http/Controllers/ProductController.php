@@ -11,8 +11,14 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $user = $request->user();
+
         $q = Product::query()
             ->with(['supplier:id,name,email,company_name,contact_person,phone,address,country']);
+
+        if ($user && $user->role === 'supplier') {
+            $q->where('supplier_id', $user->id);
+        }
 
         if ($s = $request->query('q')) {
             $q->where(function ($w) use ($s) {
@@ -42,11 +48,19 @@ class ProductController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $product = Product::with([
+        $user = $request->user();
+
+        $q = Product::with([
             'supplier:id,name,email,company_name,contact_person,phone,address,country'
-        ])->findOrFail($id);
+        ]);
+
+        if ($user && $user->role === 'supplier') {
+            $q->where('supplier_id', $user->id);
+        }
+
+        $product = $q->findOrFail($id);
 
         return response()->json([
             'message' => 'Product retrieved successfully.',
@@ -56,6 +70,14 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $user = $request->user();
+
+        if (!$user || $user->role !== 'supplier') {
+            return response()->json([
+                'message' => 'Only suppliers can create products.'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|unique:products|max:255',
             'name' => 'required|string|max:255',
@@ -64,7 +86,6 @@ class ProductController extends Controller
             'features' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'category' => 'nullable|string|max:255',
-            'supplier_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -77,9 +98,7 @@ class ProductController extends Controller
 
         unset($data['image']);
 
-        if ($request->user()) {
-            $data['supplier_id'] = $request->user()->id;
-        }
+        $data['supplier_id'] = $user->id;
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 'public');
@@ -90,13 +109,21 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product created successfully.',
-            'data' => $product,
+            'data' => $product->load('supplier:id,name,email,company_name,contact_person,phone,address,country'),
         ], 201);
     }
 
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $user = $request->user();
+
+        if (!$user || $user->role !== 'supplier') {
+            return response()->json([
+                'message' => 'Only suppliers can update products.'
+            ], 403);
+        }
+
+        $product = Product::where('supplier_id', $user->id)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|unique:products,code,' . $product->id . '|max:255',
@@ -106,7 +133,6 @@ class ProductController extends Controller
             'features' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'category' => 'nullable|string|max:255',
-            'supplier_id' => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -119,9 +145,7 @@ class ProductController extends Controller
 
         unset($data['image']);
 
-        if ($request->user()) {
-            $data['supplier_id'] = $request->user()->id;
-        }
+        $data['supplier_id'] = $user->id;
 
         if ($request->hasFile('image')) {
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
@@ -136,13 +160,21 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product updated successfully.',
-            'data' => $product,
+            'data' => $product->load('supplier:id,name,email,company_name,contact_person,phone,address,country'),
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $user = $request->user();
+
+        if (!$user || $user->role !== 'supplier') {
+            return response()->json([
+                'message' => 'Only suppliers can delete products.'
+            ], 403);
+        }
+
+        $product = Product::where('supplier_id', $user->id)->findOrFail($id);
 
         if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
             Storage::disk('public')->delete($product->image_path);

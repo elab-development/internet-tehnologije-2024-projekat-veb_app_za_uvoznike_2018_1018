@@ -9,13 +9,18 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const redirectTo = location.state?.from?.pathname || "/containers";
-
   const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("password");
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const getDefaultRouteByRole = (role) => {
+    if (role === "admin") return "/admin/users";
+    if (role === "supplier") return "/supplier/dashboard";
+    if (role === "importer") return "/importer/dashboard";
+    return "/";
+  };
 
   useEffect(() => {
     if (location.state?.emailPrefill) {
@@ -30,9 +35,9 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate(redirectTo, { replace: true });
+      navigate(getDefaultRouteByRole(user.role), { replace: true });
     }
-  }, [user, navigate, redirectTo]);
+  }, [user, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -42,8 +47,8 @@ export default function Login() {
     setBusy(true);
 
     try {
-      await login({ email, password });
-      navigate(redirectTo, { replace: true });
+      const loggedUser = await login({ email, password });
+      navigate(getDefaultRouteByRole(loggedUser.role), { replace: true });
     } catch (e) {
       const msg =
         e?.message ||

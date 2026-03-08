@@ -9,20 +9,20 @@ export default function AuthProvider({ children }) {
     const raw = localStorage.getItem("auth:user");
     return raw ? JSON.parse(raw) : null;
   });
+
   const [token, setToken] = useState(() => localStorage.getItem("auth:token"));
 
- 
   useEffect(() => {
     setAuthToken(token || null);
   }, [token]);
 
   const login = async ({ email, password }) => {
     let res;
+
     try {
-      res = await loginApi(email, password);  
+      res = await loginApi(email, password);
     } catch (e) {
       const msg = e?.errors || e?.message || "Neuspešna prijava";
-      // propagiraj poruku ka Login.jsx
       throw typeof msg === "string" ? new Error(msg) : msg;
     }
 
@@ -31,18 +31,21 @@ export default function AuthProvider({ children }) {
     }
 
     const { token: tk, user: usr } = res;
+
     setUser(usr);
     setToken(tk);
+
     localStorage.setItem("auth:user", JSON.stringify(usr));
     localStorage.setItem("auth:token", tk);
+
+    return usr;
   };
 
   const logout = async () => {
     try {
       await logoutApi();
-    } catch {
-     
-    }
+    } catch {}
+
     setUser(null);
     setToken(null);
     localStorage.removeItem("auth:user");

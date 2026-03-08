@@ -1,6 +1,5 @@
 const API_BASE = import.meta?.env?.VITE_API_URL || "http://127.0.0.1:8000/api";
 
-// ===== Token handling =====
 export const setAuthToken = (t) => {
   if (t) {
     localStorage.setItem("token", t);
@@ -13,17 +12,20 @@ export const getAuthToken = () => {
   return localStorage.getItem("token");
 };
 
-// ===== Helpers =====
 const baseHeaders = () => {
   const token = getAuthToken();
 
   return {
-    "Content-Type": "application/json",
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 };
+
+const jsonHeaders = () => ({
+  ...baseHeaders(),
+  "Content-Type": "application/json",
+});
 
 const handleResponse = async (res) => {
   const data = await res.json().catch(() => null);
@@ -46,7 +48,7 @@ export async function apiGet(path) {
 export async function apiPost(path, body) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
-    headers: baseHeaders(),
+    headers: jsonHeaders(),
     body: JSON.stringify(body ?? {}),
   });
   return handleResponse(res);
@@ -55,7 +57,7 @@ export async function apiPost(path, body) {
 export async function apiPut(path, body) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "PUT",
-    headers: baseHeaders(),
+    headers: jsonHeaders(),
     body: JSON.stringify(body ?? {}),
   });
   return handleResponse(res);
@@ -69,50 +71,59 @@ export async function apiDelete(path) {
   return handleResponse(res);
 }
 
+export async function apiPostForm(path, formData) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: baseHeaders(),
+    body: formData,
+  });
+  return handleResponse(res);
+}
 
-// =================== AUTH (bez /auth prefiksa) ===================
+export async function apiPostFormWithMethod(path, method, formData) {
+  formData.append("_method", method);
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: baseHeaders(),
+    body: formData,
+  });
+  return handleResponse(res);
+}
+
+// auth
 export const registerApi = (payload) => apiPost("/register", payload);
 export const loginApi = (email, password) => apiPost("/login", { email, password });
-// /logout je zaštićen sanctum-om → treba Bearer token
 export const logoutApi = () => apiPost("/logout", {});
 
-// =================== CONTAINERS (zaštićeno sanctum-om) ===================
+// products
+export const listProducts = () => apiGet("/products");
+export const getProduct = (id) => apiGet(`/products/${id}`);
+export const deleteProduct = (id) => apiDelete(`/products/${id}`);
+
+// za supplier create/update sa slikom
+export const createProductWithImage = (formData) => apiPostForm("/products", formData);
+export const updateProductWithImage = (id, formData) =>
+  apiPostFormWithMethod(`/products/${id}`, "PUT", formData);
+
+// ostalo ostavi kako već imaš
 export const listContainers = () => apiGet("/containers");
 export const getContainer = (id) => apiGet(`/containers/${id}`);
 export const createContainer = (payload) => apiPost("/containers", payload);
 export const updateContainer = (id, payload) => apiPut(`/containers/${id}`, payload);
 export const deleteContainer = (id) => apiDelete(`/containers/${id}`);
 
-// =================== PRODUCTS (zaštićeno sanctum-om) ===================
-export const listProducts = () => apiGet("/products");
-export const getProduct = (id) => apiGet(`/products/${id}`);
-export const createProduct = (payload) => apiPost("/products", payload);
-export const updateProduct = (id, payload) => apiPut(`/products/${id}`, payload);
-export const deleteProduct = (id) => apiDelete(`/products/${id}`);
-
-// =================== OFFERS (apiResource, zaštićeno sanctum-om) ===================
-// index, store, show, update, destroy -> /offers
-export const listOffers = () => apiGet("/offers");
-export const getOffer = (id) => apiGet(`/offers/${id}`);
-export const createOffer = (payload) => apiPost("/offers", payload);
-export const updateOffer = (id, payload) => apiPut(`/offers/${id}`, payload);
-export const deleteOffer = (id) => apiDelete(`/offers/${id}`);
-
-// =================== SUPPLIER-IMPORTER relacije (zaštićeno sanctum-om) ===================
 export const listSupplierImporters = () => apiGet("/supplier-importers");
 export const createSupplierImporter = (payload) => apiPost("/supplier-importers", payload);
 export const deleteSupplierImporter = (id) => apiDelete(`/supplier-importers/${id}`);
 
-export const getImportersBySupplier = (supplierId) =>
-  apiGet(`/supplier/${supplierId}/importers`);
-
-export const getSuppliersByImporter = (importerId) =>
-  apiGet(`/importer/${importerId}/suppliers`);
-
-
-// =================== ADMIN USERS ===================
 export const listUsers = () => apiGet("/admin/users");
 export const getUser = (id) => apiGet(`/admin/users/${id}`);
 export const createUser = (payload) => apiPost("/admin/users", payload);
 export const updateUser = (id, payload) => apiPut(`/admin/users/${id}`, payload);
 export const deleteUser = (id) => apiDelete(`/admin/users/${id}`);
+
+
+
+export const getImportersBySupplier = (supplierId) =>
+  apiGet(`/supplier/${supplierId}/importers`);

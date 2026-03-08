@@ -199,4 +199,50 @@ a{color:var(--primary);text-decoration:none}
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap:6px 16px;
+}.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.dashboard-card {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard-card h2 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+}
+
+.dashboard-card p {
+  margin: 0 0 12px 0;
+  color: #cfcfcf;
+  line-height: 1.5;
+}
+
+.dashboard-link {
+  display: inline-block;
+  margin-top: 8px;
+  text-decoration: none;
+  color: #7cb8ff;
+  font-weight: 600;
+}
+
+.dashboard-link:hover {
+  text-decoration: underline;
+}
+
+.dashboard-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #cfcfcf;
+}
+
+.dashboard-list li {
+  margin-bottom: 8px;
 }
